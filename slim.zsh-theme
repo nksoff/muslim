@@ -47,7 +47,7 @@ ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[yellow]%}═ "
 ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg[yellow]%}⬆ "
 
 # colors for completion and ls
-if [ "x$LSCOLORS" == "x" ]; then
+if [ -n "$LSCOLORS" ]; then
     export LSCOLORS='Gxfxcxdxbxegedabagacad'
     export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=36;01:cd=33;01:su=31;40;07:sg=36;40;07:tw=32;40;07:ow=33;40;07:'
 fi
