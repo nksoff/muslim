@@ -42,12 +42,34 @@ prompt_slim_part_path() {
 
 # prompt part: prompt
 prompt_slim_part_prompt() {
-  export PROMPT_SLIM_STR_PROMPT=""
+  export PROMPT_SLIM_STR_PROMPT="%(!.$PROMPT_SLIM_SYMBOL_ROOT.$PROMPT_SLIM_SYMBOL) "
 }
 
 # prompt part: git
 prompt_slim_part_git() {
   export PROMPT_SLIM_STR_GIT=""
+
+  if git rev-parse --git-dir > /dev/null 2>&1; then
+    local time=""
+    if [[ $(git log -1 2>&1 > /dev/null | grep -c "^fatal: bad default revision") == 0 ]]; then
+      local last_commit=$(git log --pretty=format:'%at' -1 2> /dev/null)
+      local now=$(date +%s)
+      local seconds_diff=$(( now - last_commit ))
+      local days=$(( seconds_diff / 60 / 60 / 24 ))
+      local hours=$(( seconds_diff / 60 / 60 % 24 ))
+      local minutes=$(( seconds_diff / 60 % 60 ))
+      (( days > 0 )) && time+="${days}d "
+      (( hours > 0 )) && time+="${hours}h "
+      (( minutes > 0 )) && time+="${minutes}m "
+    fi
+
+    local branch=""
+    branch=$(git symbolic-ref --short HEAD 2> /dev/null) || \
+    branch=$(git rev-parse --short HEAD 2> /dev/null) || \
+    branch=""
+
+    export PROMPT_SLIM_STR_GIT="${time} ${branch}"
+  fi
 }
 
 # set terminal title
@@ -77,7 +99,9 @@ prompt_slim_precmd() {
   prompt_slim_part_git
 
   # prompt itself
-  PROMPT="${PROMPT_SLIM_STR_HOST}${PROMPT_SLIM_STR_PATH} "
+  PROMPT="${PROMPT_SLIM_STR_HOST}${PROMPT_SLIM_STR_PATH}
+$PROMPT_SLIM_STR_PROMPT"
+  RPROMPT="${PROMPT_SLIM_STR_GIT}"
 }
 
 # setup
