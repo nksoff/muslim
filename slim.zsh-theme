@@ -72,7 +72,6 @@ prompt_slim_part_git() {
     local local_commit=$(git rev-parse @ 2>&1)
     local remote_commit=$(git rev-parse @{u} 2>&1)
     local common_base=$(git merge-base @ @{u} 2>&1)
-
     if [[ $local_commit != $remote_commit ]]; then
       if [[ $common_base == $remote_commit ]]; then
         pull_push_info="$PROMPT_SLIM_SYMBOL_GIT_NEED_PUSH"
@@ -83,7 +82,12 @@ prompt_slim_part_git() {
       fi
     fi
 
-    export PROMPT_SLIM_STR_GIT="${pull_push_info} ${time} ${branch}"
+    local cleanness="$PROMPT_SLIM_SYMBOL_GIT_DIRTY"
+    if test -z "$(git status --porcelain --ignore-submodules)"; then
+      cleanness="$PROMPT_SLIM_SYMBOL_GIT_CLEAN"
+    fi
+
+    export PROMPT_SLIM_STR_GIT="${pull_push_info} ${time} ${branch} ${cleanness}"
   fi
 }
 
