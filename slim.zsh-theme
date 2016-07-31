@@ -15,6 +15,7 @@ PROMPT_SLIM_SHOW_HOST_SSH=${PROMPT_SLIM_SHOW_HOST_SSH:-true}
 PROMPT_SLIM_STR_HOST=""
 PROMPT_SLIM_STR_PATH=""
 PROMPT_SLIM_STR_PROMPT=""
+PROMPT_SLIM_STR_PROMPT2=""
 PROMPT_SLIM_STR_GIT=""
 
 # prompt part: host
@@ -43,6 +44,11 @@ prompt_slim_part_path() {
 # prompt part: prompt
 prompt_slim_part_prompt() {
   export PROMPT_SLIM_STR_PROMPT="%(!.$PROMPT_SLIM_SYMBOL_ROOT.$PROMPT_SLIM_SYMBOL) "
+}
+
+# prompt part: prompt2 (second line of input, eg. run 'echo a"')
+prompt_slim_part_prompt2() {
+  export PROMPT_SLIM_STR_PROMPT2="$PROMPT_SLIM_SYMBOL_SECOND_LINE "
 }
 
 # prompt part: git
@@ -115,11 +121,13 @@ prompt_slim_precmd() {
   prompt_slim_part_host
   prompt_slim_part_path
   prompt_slim_part_prompt
+  prompt_slim_part_prompt2
   prompt_slim_part_git
 
   # prompt itself
   PROMPT="${PROMPT_SLIM_STR_HOST}${PROMPT_SLIM_STR_PATH}
 $PROMPT_SLIM_STR_PROMPT"
+  PROMPT2="${PROMPT_SLIM_STR_PROMPT2}"
   RPROMPT="${PROMPT_SLIM_STR_GIT}"
 }
 
