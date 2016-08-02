@@ -9,14 +9,25 @@ PROMPT_SLIM_SYMBOL_GIT_DIRTY=${PROMPT_SLIM_SYMBOL_GIT_DIRTY:-"±"}
 PROMPT_SLIM_SYMBOL_GIT_NEED_PUSH=${PROMPT_SLIM_SYMBOL_GIT_NEED_PUSH:-"⬆"}
 PROMPT_SLIM_SYMBOL_GIT_NEED_PULL=${PROMPT_SLIM_SYMBOL_GIT_NEED_PULL:-"⬇"}
 
-PROMPT_SLIM_SHOW_HOST_ALWAYS=${PROMPT_SLIM_SHOW_HOST_ALWAYS:-false}
+PROMPT_SLIM_SHOW_HOST_ALWAYS=${PROMPT_SLIM_SHOW_HOST_ALWAYS:-true}
 PROMPT_SLIM_SHOW_HOST_SSH=${PROMPT_SLIM_SHOW_HOST_SSH:-true}
+
+PROMPT_SLIM_COLOR_HOST_USER="green"
+PROMPT_SLIM_COLOR_HOST="yellow"
+PROMPT_SLIM_COLOR_PROMPT="blue"
+PROMPT_SLIM_COLOR_PROMPT_FAIL="red"
+PROMPT_SLIM_COLOR_PROMPT_SECOND_LINE="blue"
 
 PROMPT_SLIM_STR_HOST=""
 PROMPT_SLIM_STR_PATH=""
 PROMPT_SLIM_STR_PROMPT=""
 PROMPT_SLIM_STR_PROMPT2=""
 PROMPT_SLIM_STR_GIT=""
+
+# colorize string $w with color $1
+prompt_slim_color() {
+  echo "%F{$1}$2%f"
+}
 
 # prompt part: host
 prompt_slim_part_host() {
@@ -32,7 +43,7 @@ prompt_slim_part_host() {
         host=$(cat ~/.hostname)
     fi
 
-    export PROMPT_SLIM_STR_HOST="%n@${host} "
+    export PROMPT_SLIM_STR_HOST="$(prompt_slim_color $PROMPT_SLIM_COLOR_HOST_USER %n)@$(prompt_slim_color $PROMPT_SLIM_COLOR_HOST $host) "
   fi
 }
 
@@ -43,12 +54,14 @@ prompt_slim_part_path() {
 
 # prompt part: prompt
 prompt_slim_part_prompt() {
-  export PROMPT_SLIM_STR_PROMPT="%(!.$PROMPT_SLIM_SYMBOL_ROOT.$PROMPT_SLIM_SYMBOL) "
+  local color="%(?.$PROMPT_SLIM_COLOR_PROMPT.$PROMPT_SLIM_COLOR_PROMPT_FAIL)"
+  local symbol="%(!.$PROMPT_SLIM_SYMBOL_ROOT.$PROMPT_SLIM_SYMBOL)"
+  export PROMPT_SLIM_STR_PROMPT="$(prompt_slim_color $color $symbol) "
 }
 
 # prompt part: prompt2 (second line of input, eg. run 'echo a"')
 prompt_slim_part_prompt2() {
-  export PROMPT_SLIM_STR_PROMPT2="$PROMPT_SLIM_SYMBOL_SECOND_LINE "
+  export PROMPT_SLIM_STR_PROMPT2="$(prompt_slim_color $PROMPT_SLIM_COLOR_PROMPT_SECOND_LINE $PROMPT_SLIM_SYMBOL_SECOND_LINE) "
 }
 
 # prompt part: git
