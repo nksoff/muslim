@@ -17,6 +17,12 @@ PROMPT_SLIM_COLOR_HOST="yellow"
 PROMPT_SLIM_COLOR_PROMPT="blue"
 PROMPT_SLIM_COLOR_PROMPT_FAIL="red"
 PROMPT_SLIM_COLOR_PROMPT_SECOND_LINE="blue"
+PROMPT_SLIM_COLOR_GIT_BRANCH="green"
+PROMPT_SLIM_COLOR_GIT_NEED_PUSH="yellow"
+PROMPT_SLIM_COLOR_GIT_NEED_PULL="yellow"
+PROMPT_SLIM_COLOR_GIT_CLEAN="green"
+PROMPT_SLIM_COLOR_GIT_DIRTY="red"
+PROMPT_SLIM_COLOR_GIT_TIME="245"
 
 PROMPT_SLIM_STR_HOST=""
 PROMPT_SLIM_STR_PATH=""
@@ -79,7 +85,8 @@ prompt_slim_part_git() {
       local minutes=$(( seconds_diff / 60 % 60 ))
       (( days > 0 )) && time+="${days}d "
       (( hours > 0 )) && time+="${hours}h "
-      (( minutes > 0 )) && time+="${minutes}m "
+      (( minutes > 0 )) && time+="${minutes}m"
+      time="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_TIME $time)"
     fi
 
     local branch=""
@@ -87,23 +94,25 @@ prompt_slim_part_git() {
     branch=$(git rev-parse --short HEAD 2> /dev/null) || \
     branch=""
 
+    branch="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_BRANCH $branch)"
+
     local pull_push_info=""
     local local_commit=$(git rev-parse @ 2>&1)
     local remote_commit=$(git rev-parse @{u} 2>&1)
     local common_base=$(git merge-base @ @{u} 2>&1)
     if [[ $local_commit != $remote_commit ]]; then
       if [[ $common_base == $remote_commit ]]; then
-        pull_push_info="$PROMPT_SLIM_SYMBOL_GIT_NEED_PUSH"
+        pull_push_info="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_NEED_PUSH $PROMPT_SLIM_SYMBOL_GIT_NEED_PUSH)"
       elif [[ $common_base == $local_commit ]]; then
-        pull_push_info="$PROMPT_SLIM_SYMBOL_GIT_NEED_PULL"
+        pull_push_info="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_NEED_PULL $PROMPT_SLIM_SYMBOL_GIT_NEED_PULL)"
       else
-        pull_push_info="$PROMPT_SLIM_SYMBOL_GIT_NEED_PULL $PROMPT_SLIM_SYMBOL_GIT_NEED_PUSH"
+        pull_push_info="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_NEED_PULL $PROMPT_SLIM_SYMBOL_GIT_NEED_PULL) $(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_NEED_PUSH $PROMPT_SLIM_SYMBOL_GIT_NEED_PUSH)"
       fi
     fi
 
-    local cleanness="$PROMPT_SLIM_SYMBOL_GIT_DIRTY"
+    local cleanness="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_DIRTY $PROMPT_SLIM_SYMBOL_GIT_DIRTY)"
     if test -z "$(git status --porcelain --ignore-submodules)"; then
-      cleanness="$PROMPT_SLIM_SYMBOL_GIT_CLEAN"
+      cleanness="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_CLEAN $PROMPT_SLIM_SYMBOL_GIT_CLEAN)"
     fi
 
     export PROMPT_SLIM_STR_GIT="${pull_push_info} ${time} ${branch} ${cleanness}"
