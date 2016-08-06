@@ -87,6 +87,7 @@ prompt_slim_part_git() {
       (( days > 0 )) && time+="${days}d "
       (( hours > 0 )) && time+="${hours}h "
       (( minutes > 0 )) && time+="${minutes}m"
+      [ -z $time ] && time+="<1m"
       time="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_TIME $time)"
     fi
 
