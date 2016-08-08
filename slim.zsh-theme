@@ -99,9 +99,9 @@ prompt_slim_part_git() {
     branch="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_BRANCH $branch)"
 
     local pull_push_info=""
-    local local_commit=$(git rev-parse @ 2>&1)
-    local remote_commit=$(git rev-parse @{u} 2>&1)
-    local common_base=$(git merge-base @ @{u} 2>&1)
+    local local_commit="$(git rev-parse @ 2>&1)"
+    local remote_commit="$(git rev-parse @{u} 2>&1)"
+    local common_base="$(git merge-base @ @{u} 2>&1)"
     if [[ $local_commit != $remote_commit ]]; then
       if [[ $common_base == $remote_commit ]]; then
         pull_push_info="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_NEED_PUSH $PROMPT_SLIM_SYMBOL_GIT_NEED_PUSH)"
