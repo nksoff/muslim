@@ -29,7 +29,8 @@ PROMPT_SLIM_STR_HOST=""
 PROMPT_SLIM_STR_PATH=""
 PROMPT_SLIM_STR_PROMPT=""
 PROMPT_SLIM_STR_PROMPT2=""
-PROMPT_SLIM_STR_GIT=""
+PROMPT_SLIM_STR_GIT_LEFT=""
+PROMPT_SLIM_STR_GIT_RIGHT=""
 
 # colorize string $w with color $1
 prompt_slim_color() {
@@ -73,7 +74,8 @@ prompt_slim_part_prompt2() {
 
 # prompt part: git
 prompt_slim_part_git() {
-  export PROMPT_SLIM_STR_GIT=""
+  export PROMPT_SLIM_STR_GIT_LEFT=""
+  export PROMPT_SLIM_STR_GIT_RIGHT=""
 
   if git rev-parse --git-dir > /dev/null 2>&1; then
     local time=""
@@ -117,7 +119,8 @@ prompt_slim_part_git() {
       cleanness="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_CLEAN $PROMPT_SLIM_SYMBOL_GIT_CLEAN)"
     fi
 
-    export PROMPT_SLIM_STR_GIT="${pull_push_info}  ${branch} / ${time} / ${cleanness}"
+    export PROMPT_SLIM_STR_GIT_LEFT="$(prompt_slim_color blue 'git'):$branch / ${time}"
+    export PROMPT_SLIM_STR_GIT_RIGHT="${pull_push_info} ${cleanness}"
   fi
 }
 
@@ -150,10 +153,10 @@ prompt_slim_precmd() {
 
   # prompt itself
   PROMPT="
-${PROMPT_SLIM_STR_HOST}${PROMPT_SLIM_STR_PATH}
+${PROMPT_SLIM_STR_HOST}${PROMPT_SLIM_STR_PATH}${PROMPT_SLIM_STR_GIT_LEFT} 
 ${PROMPT_SLIM_STR_PROMPT}"
   PROMPT2="${PROMPT_SLIM_STR_PROMPT2}"
-  RPROMPT="${PROMPT_SLIM_STR_GIT}"
+  RPROMPT="${PROMPT_SLIM_STR_GIT_RIGHT}"
 }
 
 # setup
