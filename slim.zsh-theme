@@ -4,10 +4,14 @@
 PROMPT_SLIM_SYMBOL=${PROMPT_SLIM_SYMBOL:-"❯"}
 PROMPT_SLIM_SYMBOL_ROOT=${PROMPT_SLIM_SYMBOL_ROOT:-"❯❯❯"}
 PROMPT_SLIM_SYMBOL_SECOND_LINE=${PROMPT_SLIM_SYMBOL_SECOND_LINE:-"·"}
-PROMPT_SLIM_SYMBOL_GIT_CLEAN=${PROMPT_SLIM_SYMBOL_GIT_CLEAN:-"✓"}
-PROMPT_SLIM_SYMBOL_GIT_DIRTY=${PROMPT_SLIM_SYMBOL_GIT_DIRTY:-"✱"}
 PROMPT_SLIM_SYMBOL_GIT_NEED_PUSH=${PROMPT_SLIM_SYMBOL_GIT_NEED_PUSH:-"⬆"}
 PROMPT_SLIM_SYMBOL_GIT_NEED_PULL=${PROMPT_SLIM_SYMBOL_GIT_NEED_PULL:-"⬇"}
+PROMPT_SLIM_SYMBOL_GIT_UNTRACKED=${PROMPT_SLIM_SYMBOL_GIT_UNTRACKED:-"◼"}
+PROMPT_SLIM_SYMBOL_GIT_ADDED=${PROMPT_SLIM_SYMBOL_GIT_ADDED:-"✚"}
+PROMPT_SLIM_SYMBOL_GIT_MODIFIED=${PROMPT_SLIM_SYMBOL_GIT_MODIFIED:-"✱"}
+PROMPT_SLIM_SYMBOL_GIT_DELETED=${PROMPT_SLIM_SYMBOL_GIT_DELETED:-"✖"}
+PROMPT_SLIM_SYMBOL_GIT_RENAMED=${PROMPT_SLIM_SYMBOL_GIT_RENAMED:-"➜"}
+PROMPT_SLIM_SYMBOL_GIT_CONFLICTS=${PROMPT_SLIM_SYMBOL_GIT_CONFLICTS:-"!?"}
 
 PROMPT_SLIM_SHOW_HOST_ALWAYS=${PROMPT_SLIM_SHOW_HOST_ALWAYS:-false}
 PROMPT_SLIM_SHOW_HOST_SSH=${PROMPT_SLIM_SHOW_HOST_SSH:-true}
@@ -19,11 +23,15 @@ PROMPT_SLIM_COLOR_PROMPT=${PROMPT_SLIM_COLOR_PROMPT:-"blue"}
 PROMPT_SLIM_COLOR_PROMPT_FAIL=${PROMPT_SLIM_COLOR_PROMPT_FAIL:-"red"}
 PROMPT_SLIM_COLOR_PROMPT_SECOND_LINE=${PROMPT_SLIM_COLOR_PROMPT_SECOND_LINE:-"blue"}
 PROMPT_SLIM_COLOR_GIT_BRANCH=${PROMPT_SLIM_COLOR_GIT_BRANCH:-"green"}
+PROMPT_SLIM_COLOR_GIT_TIME=${PROMPT_SLIM_COLOR_GIT_TIME:-"245"}
 PROMPT_SLIM_COLOR_GIT_NEED_PUSH=${PROMPT_SLIM_COLOR_GIT_NEED_PUSH:-"yellow"}
 PROMPT_SLIM_COLOR_GIT_NEED_PULL=${PROMPT_SLIM_COLOR_GIT_NEED_PULL:-"yellow"}
-PROMPT_SLIM_COLOR_GIT_CLEAN=${PROMPT_SLIM_COLOR_GIT_CLEAN:-"green"}
-PROMPT_SLIM_COLOR_GIT_DIRTY=${PROMPT_SLIM_COLOR_GIT_DIRTY:-"blue"}
-PROMPT_SLIM_COLOR_GIT_TIME=${PROMPT_SLIM_COLOR_GIT_TIME:-"245"}
+PROMPT_SLIM_COLOR_GIT_UNTRACKED=${PROMPT_SLIM_COLOR_GIT_UNTRACKED:-"white"}
+PROMPT_SLIM_COLOR_GIT_ADDED=${PROMPT_SLIM_COLOR_GIT_ADDED:-"cyan"}
+PROMPT_SLIM_COLOR_GIT_MODIFIED=${PROMPT_SLIM_COLOR_GIT_MODIFIED:-"blue"}
+PROMPT_SLIM_COLOR_GIT_DELETED=${PROMPT_SLIM_COLOR_GIT_DELETED:-"red"}
+PROMPT_SLIM_COLOR_GIT_RENAMED=${PROMPT_SLIM_COLOR_GIT_RENAMED:-"magenta"}
+PROMPT_SLIM_COLOR_GIT_CONFLICTS=${PROMPT_SLIM_COLOR_GIT_CONFLICTS:-"yellow"}
 
 PROMPT_SLIM_STR_HOST=""
 PROMPT_SLIM_STR_PATH=""
@@ -100,7 +108,36 @@ prompt_slim_part_git() {
 
     branch="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_BRANCH $branch)"
 
-    local pull_push_info=""
+    local status_info="$(git status --porcelain --ignore-submodules 2> /dev/null)"
+
+    local status_icons=""
+    if $(echo "$status_info" | grep '^?? ' &> /dev/null); then
+      status_icons+="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_UNTRACKED $PROMPT_SLIM_SYMBOL_GIT_UNTRACKED) "
+    fi
+    if $(echo "$status_info" | grep '^UU ' &> /dev/null); then
+      status_icons+="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_CONFLICTS $PROMPT_SLIM_SYMBOL_GIT_CONFLICTS) "
+    fi
+    if $(echo "$status_info" | grep '^ D ' &> /dev/null); then
+      status_icons+="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_DELETED $PROMPT_SLIM_SYMBOL_GIT_DELETED) "
+    elif $(echo "$status_info" | grep '^D  ' &> /dev/null); then
+      status_icons+="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_DELETED $PROMPT_SLIM_SYMBOL_GIT_DELETED) "
+    fi
+    if $(echo "$status_info" | grep '^.M ' &> /dev/null); then
+      status_icons+="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_MODIFIED $PROMPT_SLIM_SYMBOL_GIT_MODIFIED) "
+    elif $(echo "$status_info" | grep '^AM ' &> /dev/null); then
+      status_icons+="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_MODIFIED $PROMPT_SLIM_SYMBOL_GIT_MODIFIED) "
+    elif $(echo "$status_info" | grep '^M' &> /dev/null); then
+      status_icons+="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_MODIFIED $PROMPT_SLIM_SYMBOL_GIT_MODIFIED) "
+    elif $(echo "$status_info" | grep '^ T ' &> /dev/null); then
+      status_icons+="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_MODIFIED $PROMPT_SLIM_SYMBOL_GIT_MODIFIED) "
+    fi
+    if $(echo "$status_info" | grep '^R' &> /dev/null); then
+      status_icons+="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_RENAMED $PROMPT_SLIM_SYMBOL_GIT_RENAMED) "
+    fi
+    if $(echo "$status_info" | grep '^A' &> /dev/null); then
+      status_icons+="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_ADDED $PROMPT_SLIM_SYMBOL_GIT_ADDED) "
+    fi
+
     local local_commit="$(git rev-parse @ 2>&1)"
     local remote_commit="$(git rev-parse @{u} 2>&1)"
     local common_base="$(git merge-base @ @{u} 2>&1)"
@@ -112,15 +149,11 @@ prompt_slim_part_git() {
       else
         pull_push_info="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_NEED_PULL $PROMPT_SLIM_SYMBOL_GIT_NEED_PULL) $(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_NEED_PUSH $PROMPT_SLIM_SYMBOL_GIT_NEED_PUSH)"
       fi
+      status_icons+="$pull_push_info"
     fi
 
-    local cleanness="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_DIRTY $PROMPT_SLIM_SYMBOL_GIT_DIRTY)"
-    if test -z "$(git status --porcelain --ignore-submodules)"; then
-      cleanness="$(prompt_slim_color $PROMPT_SLIM_COLOR_GIT_CLEAN $PROMPT_SLIM_SYMBOL_GIT_CLEAN)"
-    fi
-
-    export PROMPT_SLIM_STR_GIT_LEFT="$(prompt_slim_color blue 'git'):$branch / ${time}"
-    export PROMPT_SLIM_STR_GIT_RIGHT="${pull_push_info} ${cleanness}"
+    export PROMPT_SLIM_STR_GIT_LEFT="$(prompt_slim_color blue 'git'):${branch} / ${time}"
+    export PROMPT_SLIM_STR_GIT_RIGHT="${status_icons}"
   fi
 }
 
