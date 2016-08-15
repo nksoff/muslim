@@ -1,8 +1,8 @@
-# slim
+# muslim
 
 A simple minimal zsh prompt theme.
 
-![The screen](https://raw.github.com/nksoff/slim-zsh-theme/master/screen.png)
+![The screen](https://raw.github.com/nksoff/muslim/master/screen.png)
 
 ## Features
 - displays current working directory (sic!)
@@ -29,7 +29,7 @@ A simple minimal zsh prompt theme.
 Add to your `.zshrc`:
 
 ```
-antigen theme nksoff/slim-zsh-theme slim
+antigen theme nksoff/muslim
 ```
 
 # Inspired by
