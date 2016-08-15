@@ -70,7 +70,10 @@ prompt_slim_part_path() {
 
 # prompt part: prompt
 prompt_slim_part_prompt() {
-  local color="%(?.$PROMPT_SLIM_COLOR_PROMPT.$PROMPT_SLIM_COLOR_PROMPT_FAIL)"
+  local color="$PROMPT_SLIM_COLOR_PROMPT_FAIL"
+  if (( $? == 0 )); then
+    color="$PROMPT_SLIM_COLOR_PROMPT"
+  fi
   local symbol="%(!.$PROMPT_SLIM_SYMBOL_ROOT.$PROMPT_SLIM_SYMBOL)"
   export PROMPT_SLIM_STR_PROMPT="$(prompt_slim_color $color $symbol) "
 }
