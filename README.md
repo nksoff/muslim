@@ -29,7 +29,7 @@ A simple minimal zsh prompt theme.
 Add to your `.zshrc`:
 
 ```
-antigen theme nksoff/muslim
+antigen theme nksoff/muslim muslim
 ```
 
 # Inspired by
