@@ -40,6 +40,20 @@ Add to your `.zshrc`:
 zplug "nksoff/muslim"
 ```
 
+## [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh/)
+
+Clone repo, copy theme:
+```
+git clone https://github.com/nksoff/muslim
+mkdir -p ~/.oh-my-zsh/custom/themes
+cp muslim/muslim.zsh-theme ~/.oh-my-zsh/custom/themes
+```
+
+Add to your `.zshrc`:
+```
+ZSH_THEME="muslim"
+```
+
 # Inspired by
 - [geometry theme](https://github.com/frmendes/geometry) by frmendes
 - [pure theme](https://github.com/sindresorhus/pure) by sindresorhus
