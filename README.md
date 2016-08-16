@@ -24,12 +24,20 @@ A simple minimal zsh prompt theme.
     10. if you have conflicts during merge with `!?`
 
 # Installation
-## [Antigen](https://github.com/zsh-users/antigen)
+## [antigen](https://github.com/zsh-users/antigen)
 
 Add to your `.zshrc`:
 
 ```
 antigen theme nksoff/muslim muslim
+```
+
+## [zplug](https://github.com/zplug/zplug)
+
+Add to your `.zshrc`:
+
+```
+zplug "nksoff/muslim"
 ```
 
 # Inspired by
