@@ -24,7 +24,8 @@ A simple minimal zsh prompt theme.
     10. if you have conflicts during merge with `!?`
 
 # Installation
-## [antigen](https://github.com/zsh-users/antigen)
+
+### [antigen](https://github.com/zsh-users/antigen)
 
 Add to your `.zshrc`:
 
@@ -32,7 +33,7 @@ Add to your `.zshrc`:
 antigen theme nksoff/muslim muslim
 ```
 
-## [zplug](https://github.com/zplug/zplug)
+### [zplug](https://github.com/zplug/zplug)
 
 Add to your `.zshrc`:
 
@@ -40,7 +41,7 @@ Add to your `.zshrc`:
 zplug "nksoff/muslim"
 ```
 
-## [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh/)
+### [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh/)
 
 Clone repo, copy theme:
 ```
@@ -52,6 +53,15 @@ cp muslim/muslim.zsh-theme ~/.oh-my-zsh/custom/themes
 Add to your `.zshrc`:
 ```
 ZSH_THEME="muslim"
+```
+
+### Manual
+
+Surely, if you do not use any plugin managers, you know how to include custom theme.
+
+```
+git clone https://github.com/nksoff/muslim ~/.muslim
+echo 'source ~/.muslim/muslim.zsh-theme' >> ~/.zshrc
 ```
 
 # Inspired by
