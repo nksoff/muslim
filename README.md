@@ -41,7 +41,7 @@ Add to your `.zshrc`:
 zplug "nksoff/muslim"
 ```
 
-### [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh/)
+### [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh)
 
 Clone repo, copy theme:
 ```
@@ -53,6 +53,19 @@ cp muslim/muslim.zsh-theme ~/.oh-my-zsh/custom/themes
 Add to your `.zshrc`:
 ```
 ZSH_THEME="muslim"
+```
+
+### [prezto](https://github.com/sorin-ionescu/prezto)
+
+Clone repo, copy theme:
+```
+git clone https://github.com/nksoff/muslim ~/.zprezto/modules/prompt/external/muslim
+ln -s ~/.zprezto/modules/prompt/external/muslim/muslim.zsh-theme ~/.zprezto/modules/prompt/functions/prompt_muslim_setup
+```
+
+Add to your `.zpreztorc`:
+```
+zstyle ':prezto:module:prompt' theme 'muslim'
 ```
 
 ### Manual
