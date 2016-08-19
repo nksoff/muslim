@@ -41,6 +41,14 @@ Add to your `.zshrc`:
 zplug "nksoff/muslim"
 ```
 
+### [zgen](https://github.com/tarjoilija/zgen)
+
+Add to your `.zshrc`:
+
+```
+zgen load nksoff/muslim muslim
+```
+
 ### [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh)
 
 Clone repo, copy theme:
