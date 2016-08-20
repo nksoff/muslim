@@ -49,6 +49,14 @@ Add to your `.zshrc`:
 zgen load nksoff/muslim muslim
 ```
 
+### [antibody](https://github.com/getantibody/antibody)
+
+Add to your `.zshrc`:
+
+```
+antibody budle nksoff/muslim
+```
+
 ### [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh)
 
 Clone repo, copy theme:
