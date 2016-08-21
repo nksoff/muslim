@@ -111,7 +111,42 @@ prompt_muslim_part_git__branch() {
   branch=$(git rev-parse --short HEAD 2> /dev/null) || \
   branch=""
 
-  echo "${branch//refs\/heads\//}"
+  branch="${branch//refs\/heads\//}"
+  echo "$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_BRANCH $branch)"
+}
+
+# prompt part: git -- status_icons
+prompt_muslim_part_git__status_icons() {
+  local status_info="$(git status --porcelain --ignore-submodules 2> /dev/null)"
+  local status_icons=""
+  if $(echo "$status_info" | grep '^?? ' &> /dev/null); then
+    status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_UNTRACKED $PROMPT_MUSLIM_SYMBOL_GIT_UNTRACKED) "
+  fi
+  if $(echo "$status_info" | grep '^UU ' &> /dev/null); then
+    status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_CONFLICTS $PROMPT_MUSLIM_SYMBOL_GIT_CONFLICTS) "
+  fi
+  if $(echo "$status_info" | grep '^ D ' &> /dev/null); then
+    status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_DELETED $PROMPT_MUSLIM_SYMBOL_GIT_DELETED) "
+  elif $(echo "$status_info" | grep '^D  ' &> /dev/null); then
+    status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_DELETED $PROMPT_MUSLIM_SYMBOL_GIT_DELETED) "
+  fi
+  if $(echo "$status_info" | grep '^.M ' &> /dev/null); then
+    status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_MODIFIED $PROMPT_MUSLIM_SYMBOL_GIT_MODIFIED) "
+  elif $(echo "$status_info" | grep '^AM ' &> /dev/null); then
+    status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_MODIFIED $PROMPT_MUSLIM_SYMBOL_GIT_MODIFIED) "
+  elif $(echo "$status_info" | grep '^M' &> /dev/null); then
+    status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_MODIFIED $PROMPT_MUSLIM_SYMBOL_GIT_MODIFIED) "
+  elif $(echo "$status_info" | grep '^ T ' &> /dev/null); then
+    status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_MODIFIED $PROMPT_MUSLIM_SYMBOL_GIT_MODIFIED) "
+  fi
+  if $(echo "$status_info" | grep '^R' &> /dev/null); then
+    status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_RENAMED $PROMPT_MUSLIM_SYMBOL_GIT_RENAMED) "
+  fi
+  if $(echo "$status_info" | grep '^A' &> /dev/null); then
+    status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_ADDED $PROMPT_MUSLIM_SYMBOL_GIT_ADDED) "
+  fi
+
+  echo "${status_icons}"
 }
 
 # prompt part: git
@@ -122,37 +157,7 @@ prompt_muslim_part_git() {
   if git rev-parse --git-dir > /dev/null 2>&1; then
     local time="$(prompt_muslim_part_git__time)"
     local branch="$(prompt_muslim_part_git__branch)"
-    branch="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_BRANCH $branch)"
-
-    local status_info="$(git status --porcelain --ignore-submodules 2> /dev/null)"
-
-    local status_icons=""
-    if $(echo "$status_info" | grep '^?? ' &> /dev/null); then
-      status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_UNTRACKED $PROMPT_MUSLIM_SYMBOL_GIT_UNTRACKED) "
-    fi
-    if $(echo "$status_info" | grep '^UU ' &> /dev/null); then
-      status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_CONFLICTS $PROMPT_MUSLIM_SYMBOL_GIT_CONFLICTS) "
-    fi
-    if $(echo "$status_info" | grep '^ D ' &> /dev/null); then
-      status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_DELETED $PROMPT_MUSLIM_SYMBOL_GIT_DELETED) "
-    elif $(echo "$status_info" | grep '^D  ' &> /dev/null); then
-      status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_DELETED $PROMPT_MUSLIM_SYMBOL_GIT_DELETED) "
-    fi
-    if $(echo "$status_info" | grep '^.M ' &> /dev/null); then
-      status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_MODIFIED $PROMPT_MUSLIM_SYMBOL_GIT_MODIFIED) "
-    elif $(echo "$status_info" | grep '^AM ' &> /dev/null); then
-      status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_MODIFIED $PROMPT_MUSLIM_SYMBOL_GIT_MODIFIED) "
-    elif $(echo "$status_info" | grep '^M' &> /dev/null); then
-      status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_MODIFIED $PROMPT_MUSLIM_SYMBOL_GIT_MODIFIED) "
-    elif $(echo "$status_info" | grep '^ T ' &> /dev/null); then
-      status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_MODIFIED $PROMPT_MUSLIM_SYMBOL_GIT_MODIFIED) "
-    fi
-    if $(echo "$status_info" | grep '^R' &> /dev/null); then
-      status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_RENAMED $PROMPT_MUSLIM_SYMBOL_GIT_RENAMED) "
-    fi
-    if $(echo "$status_info" | grep '^A' &> /dev/null); then
-      status_icons+="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_ADDED $PROMPT_MUSLIM_SYMBOL_GIT_ADDED) "
-    fi
+    local status_icons="$(prompt_muslim_part_git__status_icons)"
 
     local local_commit="$(git rev-parse @ 2>&1)"
     local remote_commit="$(git rev-parse @{u} 2>&1)"
