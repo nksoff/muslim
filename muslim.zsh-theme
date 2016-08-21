@@ -83,32 +83,43 @@ prompt_muslim_part_prompt2() {
   export PROMPT_MUSLIM_STR_PROMPT2="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_PROMPT_SECOND_LINE $PROMPT_MUSLIM_SYMBOL_SECOND_LINE) "
 }
 
+# prompt part: git -- time since last time commit
+prompt_muslim_part_git__time() {
+  local time=""
+  if [[ $(git log -1 2>&1 > /dev/null | grep -c "^fatal: ") == 0 ]]; then
+    local last_commit=$(git log --pretty=format:'%at' -1 2> /dev/null)
+    local now=$(date +%s)
+    local seconds_diff=$(( now - last_commit ))
+    local days=$(( seconds_diff / 60 / 60 / 24 ))
+    local hours=$(( seconds_diff / 60 / 60 % 24 ))
+    local minutes=$(( seconds_diff / 60 % 60 ))
+    (( days > 0 )) && time+="${days}d "
+    (( hours > 0 )) && time+="${hours}h "
+    (( minutes > 0 )) && time+="${minutes}m"
+    [ -z $time ] && time+="<1m"
+    time="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_TIME $time)"
+  fi
+  echo $time
+}
+
+# prompt part: git -- branch
+prompt_muslim_part_git__branch() {
+  local branch=""
+  branch=$(git symbolic-ref HEAD 2> /dev/null) || \
+  branch=$(git rev-parse --short HEAD 2> /dev/null) || \
+  branch=""
+
+  echo "${branch//refs\/heads\//}"
+}
+
 # prompt part: git
 prompt_muslim_part_git() {
   export PROMPT_MUSLIM_STR_GIT_LEFT=""
   export PROMPT_MUSLIM_STR_GIT_RIGHT=""
 
   if git rev-parse --git-dir > /dev/null 2>&1; then
-    local time=""
-    if [[ $(git log -1 2>&1 > /dev/null | grep -c "^fatal: bad default revision") == 0 ]]; then
-      local last_commit=$(git log --pretty=format:'%at' -1 2> /dev/null)
-      local now=$(date +%s)
-      local seconds_diff=$(( now - last_commit ))
-      local days=$(( seconds_diff / 60 / 60 / 24 ))
-      local hours=$(( seconds_diff / 60 / 60 % 24 ))
-      local minutes=$(( seconds_diff / 60 % 60 ))
-      (( days > 0 )) && time+="${days}d "
-      (( hours > 0 )) && time+="${hours}h "
-      (( minutes > 0 )) && time+="${minutes}m"
-      [ -z $time ] && time+="<1m"
-      time="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_TIME $time)"
-    fi
-
-    local branch=""
-    branch=$(git symbolic-ref --short HEAD 2> /dev/null) || \
-    branch=$(git rev-parse --short HEAD 2> /dev/null) || \
-    branch=""
-
+    local time="$(prompt_muslim_part_git__time)"
+    local branch="$(prompt_muslim_part_git__branch)"
     branch="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_BRANCH $branch)"
 
     local status_info="$(git status --porcelain --ignore-submodules 2> /dev/null)"
@@ -155,7 +166,11 @@ prompt_muslim_part_git() {
       status_icons+="$pull_push_info"
     fi
 
-    export PROMPT_MUSLIM_STR_GIT_LEFT="$(prompt_muslim_color blue 'git'):${branch} / ${time}"
+    if [[ -n "${time}" ]]; then
+      time=" / ${time}"
+    fi
+
+    export PROMPT_MUSLIM_STR_GIT_LEFT="$(prompt_muslim_color blue 'git'):${branch}${time}"
     export PROMPT_MUSLIM_STR_GIT_RIGHT="${status_icons}"
   fi
 }
