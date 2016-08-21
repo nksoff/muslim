@@ -98,6 +98,8 @@ prompt_muslim_part_git__time() {
     (( minutes > 0 )) && time+="${minutes}m"
     [ -z $time ] && time+="<1m"
     time="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_TIME $time)"
+  elif [[ $(git status 2>&1 > /dev/null | grep -c "Initial commit") == 1 ]]; then
+    time="initial commit"
   fi
   echo $time
 }
