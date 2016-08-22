@@ -149,6 +149,30 @@ prompt_muslim_part_git__status_icons() {
   echo "${status_icons}"
 }
 
+# prompt part: git -- push pull
+prompt_muslim_part_git__push_pull() {
+  local pull_push_info=""
+  local local_commit="$(git rev-parse @ 2>&1)"
+  local remote_commit="$(git rev-parse @{u} 2>&1)"
+  local common_base="$(git merge-base @ @{u} 2>&1)"
+
+  if [[ $(echo "$local_commit" | grep -c 'fatal:') == 0 ]]; then
+    if [[ $(echo "$remote_commit" | grep -c 'fatal:') == 0 ]]; then
+      if [[ $local_commit != $remote_commit ]]; then
+        if [[ $common_base == $remote_commit ]]; then
+          pull_push_info="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_NEED_PUSH $PROMPT_MUSLIM_SYMBOL_GIT_NEED_PUSH)"
+        elif [[ $common_base == $local_commit ]]; then
+          pull_push_info="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_NEED_PULL $PROMPT_MUSLIM_SYMBOL_GIT_NEED_PULL)"
+        else
+          pull_push_info="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_NEED_PULL $PROMPT_MUSLIM_SYMBOL_GIT_NEED_PULL) $(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_NEED_PUSH $PROMPT_MUSLIM_SYMBOL_GIT_NEED_PUSH)"
+        fi
+      fi
+    fi
+  fi
+
+  echo "${pull_push_info}"
+}
+
 # prompt part: git
 prompt_muslim_part_git() {
   export PROMPT_MUSLIM_STR_GIT_LEFT=""
@@ -158,27 +182,14 @@ prompt_muslim_part_git() {
     local time="$(prompt_muslim_part_git__time)"
     local branch="$(prompt_muslim_part_git__branch)"
     local status_icons="$(prompt_muslim_part_git__status_icons)"
-
-    local local_commit="$(git rev-parse @ 2>&1)"
-    local remote_commit="$(git rev-parse @{u} 2>&1)"
-    local common_base="$(git merge-base @ @{u} 2>&1)"
-    if [[ $local_commit != $remote_commit ]]; then
-      if [[ $common_base == $remote_commit ]]; then
-        pull_push_info="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_NEED_PUSH $PROMPT_MUSLIM_SYMBOL_GIT_NEED_PUSH)"
-      elif [[ $common_base == $local_commit ]]; then
-        pull_push_info="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_NEED_PULL $PROMPT_MUSLIM_SYMBOL_GIT_NEED_PULL)"
-      else
-        pull_push_info="$(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_NEED_PULL $PROMPT_MUSLIM_SYMBOL_GIT_NEED_PULL) $(prompt_muslim_color $PROMPT_MUSLIM_COLOR_GIT_NEED_PUSH $PROMPT_MUSLIM_SYMBOL_GIT_NEED_PUSH)"
-      fi
-      status_icons+="$pull_push_info"
-    fi
+    local pull_push_info="$(prompt_muslim_part_git__push_pull)"
 
     if [[ -n "${time}" ]]; then
       time=" / ${time}"
     fi
 
     export PROMPT_MUSLIM_STR_GIT_LEFT="$(prompt_muslim_color blue 'git'):${branch}${time}"
-    export PROMPT_MUSLIM_STR_GIT_RIGHT="${status_icons}"
+    export PROMPT_MUSLIM_STR_GIT_RIGHT="${status_icons}${pull_push_info}"
   fi
 }
 
